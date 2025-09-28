@@ -8,10 +8,10 @@ import { LoginRequest } from '../../models/auth.model';
 @Component({
   selector: 'app-login',
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './login.html',
-  styleUrl: './login.css'
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
-export class Login {
+export class LoginComponent {
   loginData: LoginRequest = {
     username: '',
     password: ''

@@ -1,1 +1,129 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <h1>Task Manager</h1>
+    <div class="user-info">
+      <span>Welcome, {{ currentUser?.username }}!</span>
+      <button class="btn btn-secondary" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-banner">
+    {{ errorMessage }}
+    <button (click)="errorMessage = ''" class="close-btn">&times;</button>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading">Loading tasks...</div>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <!-- Add New Task Button -->
+    <div class="actions">
+      <button class="btn btn-primary" (click)="showNewTaskForm = true" *ngIf="!showNewTaskForm">
+        + Add New Task
+      </button>
+    </div>
+
+    <!-- New Task Form -->
+    <div *ngIf="showNewTaskForm" class="task-form">
+      <h3>Create New Task</h3>
+      <form (ngSubmit)="onCreateTask()" #newTaskForm="ngForm">
+        <div class="form-group">
+          <label for="newTitle">Title:</label>
+          <input type="text" id="newTitle" name="newTitle" [(ngModel)]="newTask.title" required class="form-control"
+            placeholder="Enter task title">
+        </div>
+
+        <div class="form-group">
+          <label for="newDescription">Description:</label>
+          <textarea id="newDescription" name="newDescription" [(ngModel)]="newTask.description" class="form-control"
+            placeholder="Enter task description (optional)" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="!newTask.title.trim()">
+            Create Task
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="cancelNewTask()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tasks Display -->
+    <div class="tasks-container">
+      <!-- Pending Tasks -->
+      <div class="task-section">
+        <h2>Pending Tasks ({{ pendingTasks.length }})</h2>
+        <div *ngIf="pendingTasks.length === 0" class="no-tasks">
+          No pending tasks. Great job!
+        </div>
+
+        <div *ngFor="let task of pendingTasks" class="task-card pending">
+          <div *ngIf="editingTaskId !== task.id" class="task-display">
+            <h3>{{ task.title }}</h3>
+            <p *ngIf="task.description">{{ task.description }}</p>
+            <div class="task-actions">
+              <button class="btn btn-sm btn-success" (click)="onToggleTaskStatus(task)">
+                Mark Complete
+              </button>
+              <button class="btn btn-sm btn-secondary" (click)="onEditTask(task)">
+                Edit
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="onDeleteTask(task.id!)">
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Edit Form -->
+          <div *ngIf="editingTaskId === task.id" class="task-edit">
+            <form (ngSubmit)="onUpdateTask()" #editForm="ngForm">
+              <div class="form-group">
+                <input type="text" [(ngModel)]="editTask.title" name="editTitle" required class="form-control">
+              </div>
+              <div class="form-group">
+                <textarea [(ngModel)]="editTask.description" name="editDescription" class="form-control"
+                  rows="2"></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-sm btn-primary" [disabled]="!editTask.title.trim()">
+                  Update
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" (click)="cancelEdit()">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed Tasks -->
+      <div class="task-section">
+        <h2>Completed Tasks ({{ completedTasks.length }})</h2>
+        <div *ngIf="completedTasks.length === 0" class="no-tasks">
+          No completed tasks yet.
+        </div>
+
+        <div *ngFor="let task of completedTasks" class="task-card completed">
+          <div class="task-display">
+            <h3>{{ task.title }}</h3>
+            <p *ngIf="task.description">{{ task.description }}</p>
+            <div class="task-actions">
+              <button class="btn btn-sm btn-warning" (click)="onToggleTaskStatus(task)">
+                Mark Pending
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="onDeleteTask(task.id!)">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
